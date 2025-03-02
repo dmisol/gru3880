@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/dmisol/gru3880/pkg/asm"
@@ -13,6 +14,8 @@ import (
 )
 
 var (
+	startFrom = "B600"
+
 	need2save = map[int]bool{
 		0:      true,
 		0x1000: true,
@@ -72,7 +75,7 @@ func main() {
 	}
 	log.Println(ports)
 
-	port, err := boot.Bootload(ports[0], asm.BootDump)
+	port, err := boot.Bootload(ports[0], asm.BootDumpFrom(startFrom))
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -132,7 +135,7 @@ func main() {
 
 func read_forever(port serial.Port) {
 	r := make([]byte, 1)
-	addr := 0
+	addr, _ := strconv.ParseInt(startFrom, 16, 32)
 	slice := make([]byte, 0)
 
 	for {
@@ -165,7 +168,7 @@ func read_forever(port serial.Port) {
 				addr += 0x0100
 				continue
 			}
-			if need2save[addr] {
+			if need2save[int(addr)] {
 				if addr == 0x1000 {
 					os.WriteFile(fmt.Sprintf("0x%04X.bin", addr), slice[:0x40], os.FileMode(0644))
 				} else {

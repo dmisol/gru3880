@@ -9,7 +9,7 @@ var BootDump = Serial_init + Read_n_echo +
 
 	JUMP_TO__ + "0022"
 
-func BootFrom(addr string) string {
+func BootDumpFrom(addr string) string {
 	return Serial_init + Read_n_echo +
 		LDY__ + addr +
 
